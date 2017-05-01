@@ -55,6 +55,8 @@ class Question(ClusterableModel, models.Model):
 class Poll(ClusterableModel, models.Model, index.Indexed):
     title = models.CharField(max_length=128, verbose_name=_('Title'))
     date_created = models.DateTimeField(default=timezone.now)
+    date_start = models.DateTimeField(default=timezone.now)
+    date_finish = models.DateTimeField(default=timezone.now)
 
     class Meta:
         verbose_name = _('poll')
@@ -62,6 +64,8 @@ class Poll(ClusterableModel, models.Model, index.Indexed):
 
     panels = [
         FieldPanel('title'),
+        FieldPanel('date_start'),
+        FieldPanel('date_finish'),
         InlinePanel('questions', label=_('Questions'), min_num=1)
     ]
 
@@ -71,6 +75,12 @@ class Poll(ClusterableModel, models.Model, index.Indexed):
     )
 
     objects = PollQuerySet.as_manager()
+
+    def poll_active(self):
+        if (self.date_start > timezone.now()) & (self.date_finish < timezone.now()):
+            return True
+        else:
+            return False
 
     def get_nice_url(self):
         return slugify(text_type(self))
