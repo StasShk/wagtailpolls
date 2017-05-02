@@ -78,12 +78,12 @@ class Poll(ClusterableModel, models.Model, index.Indexed):
     
     @property
     def total_votes(self):
-        total_votes = Vote.objects.filter(question__poll=poll).count()
+        total_votes = Vote.objects.filter(question__poll=self).count()
         return total_votes
 
     @property
     def poll_active(self):
-        if (self.date_start > timezone.now()) & (self.date_finish < timezone.now()):
+        if (self.date_start < timezone.now()) & (self.date_finish > timezone.now()):
             return True
         else:
             return False
